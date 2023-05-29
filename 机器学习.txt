@@ -1,0 +1,63 @@
+import numpy as np
+#数据读取
+data = np.loadtxt('data.txt', delimiter=',')
+X = data[:, :2]  # 特征
+y = data[:, 2]   # 标签
+
+
+def normalize( X):
+    X = (X - np.min(X, axis=0)) / (np.max(X, axis=0) - np.min(X, axis=0))
+    return X
+m, n = X.shape
+X = normalize(X)  # 特征值归一化
+X = np.hstack((np.ones((m, 1)), X))  # 在特征矩阵前添加一列 1，用于计算偏置项
+y = y.reshape(-1, 1)
+
+
+class LogisticRegression:
+
+    def __init__(self, alpha=0.01, num_iters=100):
+        self.alpha = alpha  # 学习率
+        self.num_iters = num_iters  # 迭代次数
+        self.w = None  # 权重
+        self.b = None  # 偏差
+
+    def __sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+
+
+
+    def __cost_function(self, X, y, w, b):
+        m = len(y)
+        z = X.dot(w) + b
+        h = self.__sigmoid(z)
+        J = -1 / m * (y.T.dot(np.log(h + 1e-15)) + (1 - y).T.dot(np.log(1 - h + 1e-15)))
+        return J
+
+    def __gradient(self, X, y, w, b):
+        m = len(y)
+        z = X.dot(w) + b
+        h = self.__sigmoid(z)
+        dw = 1 / m * X.T.dot(h - y)
+        db = 1 / m * np.sum(h - y)
+        return dw, db
+
+    def fit(self, X, y):
+        m, n = X.shape
+        self.w = np.zeros((n, 1))
+        self.b = 0
+        J_history = []
+
+        for i in range(self.num_iters):
+            dw, db = self.__gradient(X, y, self.w, self.b)
+            self.w -= self.alpha * dw
+            self.b -= self.alpha * db
+            J_history.append(self.__cost_function(X, y, self.w, self.b))
+            print("第{}此迭代,损失函数值为：{}".format(i+1,J_history[i]))
+
+
+        return J_history
+
+if __name__=="__main__":
+    model = LogisticRegression()
+    model.fit(X,y)
