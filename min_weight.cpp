@@ -31,8 +31,6 @@ struct Graph{
 	}
 
 	// prim 算法求最小生成树
-
-	void Prim
 	
 				
 };
@@ -58,7 +56,8 @@ int main(){
 	g.add_Edge(5,3,2);
     // 顶点3
 	g.add_Edge(3,2,5);
-    g.mst();
+	cout<< "最小生成树的权值为："<<endl;
+
 	return 0;
 	
 	
